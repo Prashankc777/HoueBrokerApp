@@ -2,119 +2,111 @@
 
 ## Database Configuration
 
-Before running the application, make sure to update the database connection string.
+Before running the application, update the connection string:
 
 - File: `HouseBrokerMVP.API/appsettings.json`
-- Update: `ConnectionStrings:DefaultConnection`
-- Set it according to your SQL Server instance and authentication details.
+- Key: `ConnectionStrings:DefaultConnection`
+- Set it according to your SQL Server setup (hostname, database name, authentication).
 
 ---
 
 ## Automatic Database Initialization
 
-This project includes an initial Entity Framework migration that is automatically applied when the application starts.
+When you run the project, it automatically applies the latest Entity Framework migration to the database.  
+No need to manually run `add-migration` or `update-database`.
 
-> ✅ No need to manually run `add-migration` or `update-database`.  
-> As long as the connection string is correct, the database schema is applied automatically at runtime.
+> ✅ Just run the project — if the database doesn't exist, it will be created.
+
+---
+
+## Swagger UI Enabled
+
+The API is fully documented with Swagger.
+
+> 🧪 Swagger will launch automatically when the project starts (in development mode).  
+> You can test all endpoints from there without any external tool.
+
+Swagger URL:  
+`https://localhost:{port}/swagger` (replace `{port}` with your actual app port)
 
 ---
 
 ## API Endpoints
 
-### Authentication
-
-Base route: `api/auth`
+### Authentication – `api/auth`
 
 #### 🔐 Login  
 **POST** `/login`  
-Authenticate a user with their credentials.
+Authenticate a user using their email and password.
 
-- **Body:**
-  - `emailAddress`: User's email
-  - `password`: User's password  
-- **Response:**  
-  `200 OK` – Authenticated | `400 Bad Request` – Invalid credentials
+- **Request Body:**
+  - `emailAddress`
+  - `password`
 
 #### 🧑‍💼 Register Broker  
 **POST** `/register-broker`  
-Register a new broker account.
+Create a new broker account.
 
-- **Body:**
-  - `emailAddress`
-  - `password`
-  - `confirmPassword`
-  - `phoneNumber`  
-- **Response:**  
-  `200 OK` – Registered | `400 Bad Request` – Validation errors
+- **Request Body:**
+  - `emailAddress`, `password`, `confirmPassword`, `phoneNumber`
 
 #### 🔄 Change Password  
 **POST** `/change-password`  
-Update current user's password.  
-Requires authentication header.
+Authenticated users can change their password.
 
-- **Body:**
-  - `oldPassword`
-  - `newPassword`  
-- **Response:**  
-  `200 OK` – Success | `400 Bad Request` – Failure
-
-#### 👤 Get Profile  
+#### 👤 Get My Details  
 **GET** `/me`  
-Retrieve authenticated user’s profile.  
-Requires auth header.
+Get profile info of the logged-in user.
 
 ---
 
-### Property Types
+### Property Type – `api/property-type`
 
-Base route: `api/property-type`
-
-- `GET /` – List all property types  
+- `GET /` – List property types  
 - `GET /{id}` – Get property type by ID  
 - `POST /` – Add new property type  
-- `PUT /{id}` – Update existing property type  
-- `DELETE /{id}` – Remove a property type
+- `PUT /{id}` – Update property type  
+- `DELETE /{id}` – Delete property type
 
 > 🔐 All endpoints require authentication
 
 ---
 
-### Property Listings
-
-Base route: `api/property`
+### Property – `api/property`
 
 #### 🔎 Search Properties  
 **GET** `/search`  
-Query params (optional): `location`, `minPrice`, `maxPrice`, `propertyType`
+Optional query params: `location`, `minPrice`, `maxPrice`, `propertyType`
 
-#### 📋 Get All Properties  
-**GET** `/` – List all properties (requires auth)
+#### 📋 Get All  
+**GET** `/`  
+Returns all properties (requires auth)
 
-#### 📄 Get Property by ID  
-**GET** `/{id}` – View single property details (requires auth)
+#### 📄 Get by ID  
+**GET** `/{id}`  
+Returns property details (requires auth)
 
 #### ➕ Add Property  
-**POST** `/` – Submit property details (multipart form)
+**POST** `/`  
+Submit new property (multipart form)
 
-- Fields:
-  - `Name`, `price`, `propertyTypeId`, `address`, `description`
-  - `Images` (file upload)
+- Fields: `Name`, `price`, `propertyTypeId`, `address`, `description`, `Images[]`
 
 #### 🖊 Update Property  
-**PUT** `/{id}` – Update property info (form-data)
+**PUT** `/{id}`  
+Update existing property (form-data)
 
 #### ❌ Delete Property  
-**DELETE** `/{id}` – Remove property entry
-
-> 🔐 All property management endpoints require authentication
+**DELETE** `/{id}`  
+Remove a property by ID
 
 ---
 
 ## Notes
 
-- Role-based access and JWT authentication are implemented.
-- Image uploads are stored in the `PropertyImage` folder and served statically via `/propertyImage`.
+- JWT Authentication and role-based access control are implemented.
+- Image uploads are stored in the `PropertyImage` folder and served via `/propertyImage` endpoint.
+- Swagger UI is auto-enabled on startup to test all endpoints easily.
 
 ---
 
-Let me know if you want to add example requests/responses or Swagger UI info to impress further.
