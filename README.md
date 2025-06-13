@@ -3,13 +3,13 @@
 ## Database Configure
   HouserBrokerMVP>HouseBrokerMVP.API>appsettings.json: Change ConnetionSettings:DefaultConnection as per your sql server hostname and authentication mechanism
   
-## Migrations 
+## Automatic Migration at Startup
 
-**addmigration.bat**
-  To add migration, supply migration name. Example in CLI: addmigration first
+- This project includes a migration named `20250613182718_Final`.
+- When you run the application, the migration is automatically applied on startup.
+- No need to run `add-migration` or `update-database` manually.
 
-**dbupdate.bat**
-  To updated database with added migrations, Example in CLI: dbupdate
+Make sure your connection string in `appsettings.json` is correct before starting the project.
 
 ## Endpoints
 
