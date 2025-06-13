@@ -1,221 +1,120 @@
-# House Broker MVP
+# HouseBroker MVP
 
-## Database Configure
-  HouserBrokerMVP>HouseBrokerMVP.API>appsettings.json: Change ConnetionSettings:DefaultConnection as per your sql server hostname and authentication mechanism
-  
-## Automatic Migration at Startup
+## Database Configuration
 
-- This project includes a migration named `20250613182718_Final`.
-- When you run the application, the migration is automatically applied on startup.
-- No need to run `add-migration` or `update-database` manually.
+Before running the application, make sure to update the database connection string.
 
-Make sure your connection string in `appsettings.json` is correct before starting the project.
+- File: `HouseBrokerMVP.API/appsettings.json`
+- Update: `ConnectionStrings:DefaultConnection`
+- Set it according to your SQL Server instance and authentication details.
 
-## Endpoints
+---
 
-## Authentication
-## `api/auth`
+## Automatic Database Initialization
 
-### Login
-Authenticate a user by providing valid credentials.
+This project includes an initial Entity Framework migration that is automatically applied when the application starts.
 
-- **Endpoint:** `POST /login`
-- **Request Body Type:** `JSON Body`
-- **Request Body:**
-  - `emailAddress`: Valid Email Addresss
-  - `password`: Password of the registered user
-- **Response:**
-  - Success: `200 OK` with authentication details.
-  - Failure: `400 Bad Request` with an error message.
+> ✅ No need to manually run `add-migration` or `update-database`.  
+> As long as the connection string is correct, the database schema is applied automatically at runtime.
 
-### Register Broker
-Register a new broker user.
+---
 
-- **Endpoint:** `POST /register-broker`
-- **Request Body Type:** `JSON Body`
-- **Request Body:**
-  - `emailAddress`: Email Address of broker
-  - `password`: Password to be used for registration
-  - `confirmPassword`: Confirm Password to be used for registration
-  - `phoneNumber`: Phonenumber of broker
-- **Response:**
-  - Success: `200 OK` with the registered broker's username.
-  - Failure: `400 Bad Request` with an error message.
+## API Endpoints
 
+### Authentication
 
-### Change Password
-Change the password of the authenticated user.
+Base route: `api/auth`
 
-- **Endpoint:** `POST /change-password`
-- **Request Body:**
-  - `oldPassword`: Old Password of the user
-  - `newPassword`: New Password to be used
-- **Authorization Header:**
-  - Required for authentication.
-- **Response:**
-  - Success: `200 OK` with a success message.
-  - Failure: `400 Bad Request` with an error message.
+#### 🔐 Login  
+**POST** `/login`  
+Authenticate a user with their credentials.
 
-### Get My Details
-Retrieve details of the authenticated user.
+- **Body:**
+  - `emailAddress`: User's email
+  - `password`: User's password  
+- **Response:**  
+  `200 OK` – Authenticated | `400 Bad Request` – Invalid credentials
 
-- **Endpoint:** `GET /me`
-- **Authorization Header:**
-  - Required for authentication.
-- **Response:**
-  - Success: `200 OK` with user details.
-  - Failure: `400 Bad Request` with an error message.
+#### 🧑‍💼 Register Broker  
+**POST** `/register-broker`  
+Register a new broker account.
 
+- **Body:**
+  - `emailAddress`
+  - `password`
+  - `confirmPassword`
+  - `phoneNumber`  
+- **Response:**  
+  `200 OK` – Registered | `400 Bad Request` – Validation errors
 
+#### 🔄 Change Password  
+**POST** `/change-password`  
+Update current user's password.  
+Requires authentication header.
 
-### Property Type
-### `api/property-type`
+- **Body:**
+  - `oldPassword`
+  - `newPassword`  
+- **Response:**  
+  `200 OK` – Success | `400 Bad Request` – Failure
 
-### Get List of Property Types
-Retrieve a list of all property types.
+#### 👤 Get Profile  
+**GET** `/me`  
+Retrieve authenticated user’s profile.  
+Requires auth header.
 
-- **Endpoint:** `GET /`
-- **Authorization Header:**
-  - Required for authentication.
-- **Response:**
-  - Success: `200 OK` with a list of property types.
-  - Failure: `400 Bad Request` with an error message.
+---
 
-### Get Property Type by ID
-Retrieve details of a specific property type by its ID.
+### Property Types
 
-- **Endpoint:** `GET /{id}`
-- **Parameters:**
-  - `id` (required): ID of the property type.
-- **Authorization Header:**
-  - Required for authentication.
-- **Response:**
-  - Success: `200 OK` with property type details.
-  - Failure: `400 Bad Request` with an error message.
+Base route: `api/property-type`
 
-### Add Property Type
-Add a new property type with details.
+- `GET /` – List all property types  
+- `GET /{id}` – Get property type by ID  
+- `POST /` – Add new property type  
+- `PUT /{id}` – Update existing property type  
+- `DELETE /{id}` – Remove a property type
 
-- **Endpoint:** `POST /`
-- **Request Body:**
-  - `{"name":""}` JSON object containing property type details.
-- **Authorization Header:**
-  - Required for authentication.
-- **Response:**
-  - Success: `200 OK` with the created property type details.
-  - Failure: `400 Bad Request` with an error message.
+> 🔐 All endpoints require authentication
 
-### Update Property Type
-Update an existing property type with new details.
+---
 
-- **Endpoint:** `PUT /{id}`
-- **Parameters:**
-  - `id` (required): ID of the property type to update.
-- **Authorization Header:**
-  - Required for authentication.
-- **Request Body:**
-  - `{"id":null,"name":""}` JSON object containing property type details.
-- **Response:**
-  - Success: `200 OK` with the updated property type details.
-  - Failure: `400 Bad Request` with an error message.
+### Property Listings
 
-### Delete Property Type
-Delete a property type by its ID.
+Base route: `api/property`
 
-- **Endpoint:** `DELETE /{id}`
-- **Parameters:**
-  - `id` (required): ID of the property type to delete.
-- **Response:**
-  - Success: `200 OK` with a success message.
-  - Failure: `400 Bad Request` with an error message.
+#### 🔎 Search Properties  
+**GET** `/search`  
+Query params (optional): `location`, `minPrice`, `maxPrice`, `propertyType`
 
+#### 📋 Get All Properties  
+**GET** `/` – List all properties (requires auth)
 
-### Property 
-### `api/property`
+#### 📄 Get Property by ID  
+**GET** `/{id}` – View single property details (requires auth)
 
-### Search Property 
-Search for properties based on location, price range, and property type.
+#### ➕ Add Property  
+**POST** `/` – Submit property details (multipart form)
 
-- **Endpoint:** `GET /search`
-- **Parameters:**
-  - `location` (optional): Location to search for properties.
-  - `minPrice` (optional): Minimum price of the property.
-  - `maxPrice` (optional): Maximum price of the property.
-  - `propertyType` (optional): ID of the property type.
-- **Response:**
-  - Success: 200 OK with a list of properties.
-  - Failure: 400 Bad Request with an error message.
+- Fields:
+  - `Name`, `price`, `propertyTypeId`, `address`, `description`
+  - `Images` (file upload)
 
-### Get List of Properties
-Retrieve a list of all properties.
+#### 🖊 Update Property  
+**PUT** `/{id}` – Update property info (form-data)
 
-- **Endpoint:** `GET /`
-- **Authorization Header:**
-  - Required for authentication.
-- **Response:**
-  - Success: 200 OK with a list of properties.
-  - Failure: 400 Bad Request with an error message.
+#### ❌ Delete Property  
+**DELETE** `/{id}` – Remove property entry
 
-### Get Property by ID
-Retrieve details of a specific property by its ID.
+> 🔐 All property management endpoints require authentication
 
-- **Endpoint:** `GET /{id}`
-- **Parameters:**
-  - `id` (required): ID of the property.
-  - **Authorization Header:**
-  - Required for authentication.
-- **Response:**
-  - Success: 200 OK with property details.
-  - Failure: 400 Bad Request with an error message.
+---
 
-### Add Property
-Add a new property with details.
+## Notes
 
-- **Endpoint:** `POST /`
-- **Request Body Type:** `Form Data`
-- **Request Body:**
-  - `Name`: 
-  - `price`: 
-  - `propertyTypeId`: 
-  - `address`: 
-  - `description`: 
-  - `Images`: Files representing property images.
-  - **Authorization Header:**
-  - Required for authentication.
-- **Response:**
-  - Success: 200 OK with the created property details.
-  - Failure: 400 Bad Request with an error message.
+- Role-based access and JWT authentication are implemented.
+- Image uploads are stored in the `PropertyImage` folder and served statically via `/propertyImage`.
 
-### Update Property
-Update an existing property with new details.
+---
 
-- **Endpoint:** `PUT /{id}`
-- **Request Body Type:** `Form Data`
-- **Parameters:**
-  - `id` (required): ID of the property to update.
-  - **Authorization Header:**
-  - Required for authentication.
-- **Request Body:**
-  - `Id`
-  - `Name`: 
-  - `price`: 
-  - `propertyTypeId`: 
-  - `address`: 
-  - `description`: 
-  - `Images`: Files representing property images.
-- **Response:**
-  - Success: 200 OK with the updated property details.
-  - Failure: 400 Bad Request with an error message.
-
-### Delete Property
-Delete a property by its ID.
-
-- **Endpoint:** `DELETE /{id}`
-- **Parameters:**
-  - `id` (required): ID of the property to delete.
-  - **Authorization Header:**
-  - Required for authentication.
-- **Response:**
-  - Success: 200 OK with a success message.
-  - Failure: 400 Bad Request with an error message.
-
+Let me know if you want to add example requests/responses or Swagger UI info to impress further.
